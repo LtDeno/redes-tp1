@@ -1,8 +1,8 @@
 import argparse
+import logging
 
 
 class ArgumentParser:
-
     def __init__(self):
         self.parser = argparse.ArgumentParser(
             description="Argument parser for UDP client/server"
@@ -26,10 +26,7 @@ class ArgumentParser:
     def _add_host(self):
         """Añade el argumento para la dirección IP."""
         self.parser.add_argument(
-            "-H",
-            "--host",
-            required=True,
-            help="server IP address"
+            "-H", "--host", required=True, help="server IP address"
         )
 
     def _add_port(self):
@@ -82,10 +79,7 @@ class ArgumentParser:
     def _add_service_host(self):
         """Añade el argumento para la dirección IP."""
         self.parser.add_argument(
-            "-H",
-            "--host",
-            required=True,
-            help="service IP address"
+            "-H", "--host", required=True, help="service IP address"
         )
 
     def _add_service_port(self):
@@ -138,3 +132,11 @@ class ArgumentParser:
         self._add_port()
         self._add_storage_path()
         return self._parse()
+
+    def configure_logging(self, args):
+        levels = {
+            (True, False): logging.DEBUG,
+            (False, True): logging.ERROR,
+        }
+        level = levels.get((args.verbose, args.quiet), logging.INFO)
+        logging.basicConfig(level=level, format="%(levelname)s - %(message)s")
