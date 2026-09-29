@@ -2,7 +2,7 @@ import argparse
 import logging
 
 
-class ArgumentParser:
+class ParserHandler:
     def __init__(self):
         self.parser = argparse.ArgumentParser(
             description="Argument parser for UDP client/server"

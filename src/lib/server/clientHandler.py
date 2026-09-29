@@ -2,26 +2,25 @@ import logging
 import threading
 from queue import Empty, Queue
 
-from src.lib.common.constants import (
+from lib.common.constants import (
     ACTION_DOWNLOAD,
     ACTION_UPLOAD,
-    RECEIVER_TIMEOUT,
+    QUEUE_TIMEOUT,
     REQUEST_SIZE,
     TYPE_ACK,
     TYPE_CONFIRM,
     TYPE_START,
 )
-from src.lib.common.logMessages import (
+from lib.common.packet_utils import decode, encode
+from lib.common.request_utils import parse_request
+from lib.server.downloadHandler import DownloadHandler
+from lib.server.logMessages import (
     ERROR_CLIENTHANDLER,
     ERROR_FORMAT_REQUEST,
     ERROR_UNKNOWN_ACTION,
     EXECUTE_ACTION,
 )
-from src.lib.common.packet_utils import decode, encode
-from src.lib.common.request_utils import parse_request
-
-from .downloadHandler import DownloadHandler
-from .uploadHandler import UploadHandler
+from lib.server.uploadHandler import UploadHandler
 
 logger = logging.getLogger(__name__)
 
@@ -40,14 +39,19 @@ class ClientHandler(threading.Thread):
         self.storage = storage
         self.queue = Queue()
 
+    def run(self):
+        self.handle()
+
     def _wait_for_start(self):  # Hanshake
+        result = ()
         while True:
             try:
-                request = self.queue.get(timeout=RECEIVER_TIMEOUT)
+                """timeout=QUEUE_TIMEOUT, si pasan 10 segundos sin nada, .get() lanza Empty, 
+                el except lo convierte en return None, handle() cae al finally y libera todo"""
+                request = self.queue.get(timeout=QUEUE_TIMEOUT)
             except Empty:
                 return None
 
-            result = ()
             pack_type, _, payload = decode(request)
             if pack_type == TYPE_START:
                 parts = parse_request(payload)
@@ -55,14 +59,16 @@ class ClientHandler(threading.Thread):
                     logger.error(ERROR_FORMAT_REQUEST.format(addr=self.addr))
                     continue
                 result = parts
-                packet = encode(TYPE_ACK, 0)
+                packet = encode(TYPE_ACK)
                 self.send_packet(packet)
                 continue
 
-            if pack_type == TYPE_CONFIRM:
+            if (
+                pack_type == TYPE_CONFIRM
+            ):  # Tenemos QUEUE_TIMEOUT=10s para recibir el confirm
                 return result  # handshake completo
 
-    def recv_packet(self, data):
+    def get_packet(self, data):
         self.queue.put(data)
 
     def send_packet(self, packet):
@@ -76,7 +82,10 @@ class ClientHandler(threading.Thread):
             action, filename, protocol = result
             logger.info(
                 EXECUTE_ACTION.format(
-                    action=action, filename=filename, protocol=protocol.upper()
+                    addr=self.addr,
+                    action=action,
+                    filename=filename,
+                    protocol=protocol.upper(),
                 )
             )
             handler_cls = ACTIONS.get(action)

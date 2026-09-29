@@ -1,8 +1,8 @@
 import logging
 from pathlib import Path
 
-from src.lib.common.constants import PAYLOAD_SIZE
-from src.lib.common.logMessages import (
+from lib.common.constants import PAYLOAD_SIZE
+from lib.common.logMessages import (
     CREATE_FILE,
     ERROR_EMPTY_LIST,
     ERROR_PROCESS_FILE,

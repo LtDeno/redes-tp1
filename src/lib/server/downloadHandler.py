@@ -1,11 +1,11 @@
 import logging
 from time import sleep
 
-from src.lib.common.constants import DELAY, MAX_RETRIES, TYPE_ERROR, TYPE_READY
-from src.lib.common.fileHandler import FileHandler
-from src.lib.common.logMessages import ERROR_READ_FILE, SENDING_FILE, SENT_FILE
-from src.lib.common.packet_utils import encode
-from src.lib.common.protocols import PROTCOLS
+from lib.common.constants import DELAY, MAX_RETRIES, TYPE_ERROR, TYPE_READY
+from lib.common.fileHandler import FileHandler
+from lib.common.packet_utils import encode
+from lib.common.protocols import PROTCOLS
+from lib.server.logMessages import ERROR_READ_FILE, SENDING_FILE, SENT_FILE
 
 logger = logging.getLogger(__name__)
 

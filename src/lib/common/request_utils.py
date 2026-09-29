@@ -1,4 +1,4 @@
-from src.lib.common.constants import SEPARATOR
+from lib.common.constants import SEPARATOR
 
 
 def build_request(action, filename, protocol):

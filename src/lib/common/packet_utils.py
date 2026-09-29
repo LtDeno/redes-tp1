@@ -1,7 +1,7 @@
-from src.lib.common.constants import HEADER_SIZE, SEQ_NUMB_SIZE, TYPE_PACKET_SIZE
+from lib.common.constants import HEADER_SIZE, SEQ_NUMB_SIZE, TYPE_PACKET_SIZE
 
 
-def encode(pack_type, seq_num, payload=b""):
+def encode(pack_type, seq_num=0, payload=b""):
     header = pack_type.to_bytes(TYPE_PACKET_SIZE, "big") + seq_num.to_bytes(
         SEQ_NUMB_SIZE, "big"
     )

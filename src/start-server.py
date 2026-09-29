@@ -1,5 +1,10 @@
-from lib.common.argumentParser import ArgumentParser as argParse
+from lib.common.parserHandler import ParserHandler
+from lib.server.server import Server
 
 if __name__ == "__main__":
-    args = argParse().get_arguments_start_server()
-    argParse.configure_logging(args)
+    parser = ParserHandler()
+    args = parser.get_arguments_start_server()
+    print(args)
+    parser.configure_logging(args)
+    server = Server((args.host, args.port), args.storage)
+    server.start()

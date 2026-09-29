@@ -3,14 +3,13 @@ import socket
 import threading
 from os import makedirs
 
-from src.lib.common.logMessages import (
+from lib.server.clientHandler import ClientHandler
+from lib.server.logMessages import (
     CLIENT_REMOVED,
     NEW_CLIENT,
     SERVER_LISTENING,
     SERVER_SHUTDOWN,
 )
-
-from .clientHandler import ClientHandler
 
 HOST = 0
 PORT = 1
@@ -19,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class Server:
     def __init__(self, address, storage):
-        self.addr = address
+        self.addr = address  # addr = (host, port)
         self.storage = storage
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # socket UDP
         self.clients = {}
@@ -40,10 +39,10 @@ class Server:
             self.clients[addr] = ClientHandler(
                 addr, self.socket, self.storage, self._remove_client
             )
-            self.clients[addr].recv_packet(data)
+            self.clients[addr].get_packet(data)
             self.clients[addr].start()
         else:
-            self.clients[addr].recv_packet(data)
+            self.clients[addr].get_packet(data)
 
     def start(self):
         self._create_storage()

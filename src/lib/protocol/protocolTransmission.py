@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class ProtocolTransmission(ABC):
     @abstractmethod
     def send_file(self, chunks):

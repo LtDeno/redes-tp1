@@ -1,10 +1,12 @@
 """Tipos de paquetes - Tipos de mensajes"""
+
 TYPE_START = 1
 TYPE_ACK = 2
 TYPE_CONFIRM = 3
 TYPE_READY = 4
 TYPE_DATA = 5
 TYPE_ERROR = 6
+TYPE_FIN = 7
 
 """Acciones - Programas"""
 ACTION_UPLOAD = "UPLOAD"
@@ -19,11 +21,15 @@ HEADER_SIZE = TYPE_PACKET_SIZE + SEQ_NUMB_SIZE
 
 
 REQUEST_SIZE = 3
-PAYLOAD_SIZE = 2900 #A priori, lo podemos cambiar mas adelante.
+PAYLOAD_SIZE = 2900  # A priori, lo podemos cambiar mas adelante.
 
+HANDSHAKE_RETRIES = 10  
 
 MAX_RETRIES = 10
 
 """TIMEOUTS"""
 DELAY = 0.5
+QUEUE_TIMEOUT = 10
 RECEIVER_TIMEOUT = 4
+
+READY_BURST_TIME = DELAY * MAX_RETRIES
