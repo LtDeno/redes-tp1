@@ -39,5 +39,5 @@ class DownloadHandler:
         self._send_ready()
         logger.info(SENDING_FILE.format(addr=self.ctx.addr, filename=filename))
         protocol_instance = PROTCOLS[protocol](self.ctx)
-        protocol_instance.send_file(data)
+        protocol_instance.send_data(data)
         logger.info(SENT_FILE.format(addr=self.ctx.addr, filename=filename))

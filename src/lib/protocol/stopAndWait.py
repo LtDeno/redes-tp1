@@ -7,7 +7,7 @@ class StopAndWait(ProtocolTransmission):
 
 
     def send_data(self, message):
-       print("Recibiendo archivo")
+       print("Enviando archivo - Stop And Wait")
 
     def recieve_data(self, message):
-        print("Enviado archivo")
+        print("Recibiendo Archivo - Stop And Wait")

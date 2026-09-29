@@ -28,7 +28,7 @@ class UploadHandler:
         logger.info(RECEIVING_FILE.format(addr=self.ctx.addr, filename=filename))
         data = []
         protocol_instance = PROTCOLS[protocol](self.ctx)
-        protocol_instance.receive_file(data)
+        protocol_instance.recieve_data(data) 
 
         file_handler = FileHandler(storage, filename)
         file_handler.write(data)

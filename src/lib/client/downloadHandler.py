@@ -94,7 +94,7 @@ class DownloadHandler:
         file_handler = FileHandler(self.dst, self.filename)
         try:
             protocol = PROTCOLS[self.protocol](self.client)
-            protocol.receive_file(data)
+            protocol.recieve_data(data)
             if not data:
                 logger.error(ERROR_TRANSFER.format(error="no se recibieron datos"))
                 return

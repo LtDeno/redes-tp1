@@ -88,7 +88,7 @@ class UploadHandler:
         logger.info(INIT_TRANS_DATA)
         try:
             protocol = PROTCOLS[self.protocol](self.client)
-            protocol.send_file(data)
+            protocol.send_data(data)
             logger.info(SUCCESSFUL_UPLOAD.format(filename=self.filename))
         except Exception as e:
             logger.error(ERROR_TRANSFER.format(error=e))
