@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 
 class ProtocolTransmission(ABC):
     @abstractmethod
-    def send_file(self, chunks):
+    def send_data(self, message):
         pass
 
     @abstractmethod
-    def receive_file(self, chunks):
+    def recieve_data(self, message):
         pass
