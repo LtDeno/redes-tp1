@@ -27,9 +27,12 @@ HANDSHAKE_RETRIES = 10
 
 MAX_RETRIES = 10
 
+READY_BURST = 3        # cantidad de READY
+READY_DELAY = 0.05    
+CONFIRM_TIMEOUT = 1.0  # reintento de CONFIRM en el cliente
+READY_WINDOW = 5.0     # ventana total del cliente para recibir READY (s)
+
 """TIMEOUTS"""
 DELAY = 0.5
 QUEUE_TIMEOUT = 10
 RECEIVER_TIMEOUT = 4
-
-READY_BURST_TIME = DELAY * MAX_RETRIES

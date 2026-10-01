@@ -15,7 +15,8 @@ from lib.client.logMessages import (
 from lib.common.constants import (
     ACTION_DOWNLOAD,
     HANDSHAKE_RETRIES,
-    READY_BURST_TIME,
+    READY_WINDOW,
+    CONFIRM_TIMEOUT,
     TYPE_ACK,
     TYPE_CONFIRM,
     TYPE_ERROR,
@@ -49,13 +50,15 @@ class DownloadHandler:
 
     def _wait_for_ready(self):
         """True = READY, False = ERROR (archivo inexistente), None = no llegó nada."""
-        limit = monotonic() + READY_BURST_TIME
+        limit = monotonic() + READY_WINDOW
         while True:
             remaining = limit - monotonic()  # cuánto tiempo me queda de ventana
             if remaining <= 0:
                 return None
             try:
-                packet = self.client.get_packet(timeout=min(remaining, TIMEOUT))
+                #con timeout=min(remaining, CONFIRM_TIMEOUT) se evita que una 
+                                #espera se pase de la ventana total (Si quedan 0,4 s de ventana, espera 0,4 s y no 1 s)
+                packet = self.client.get_packet(timeout=min(remaining, CONFIRM_TIMEOUT))
                 pack_type, _, _ = decode(packet)
                 if pack_type == TYPE_READY:
                     return True

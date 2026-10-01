@@ -1,7 +1,7 @@
 import logging
 from time import sleep
 
-from lib.common.constants import DELAY, MAX_RETRIES, TYPE_ERROR, TYPE_READY
+from lib.common.constants import READY_DELAY, READY_BURST, MAX_RETRIES, DELAY, TYPE_ERROR, TYPE_READY
 from lib.common.fileHandler import FileHandler
 from lib.common.packet_utils import encode
 from lib.common.protocols import PROTCOLS
@@ -17,10 +17,11 @@ class DownloadHandler:
     """Se agrega un agregar un delay entre reintentos para que no se disparén todos juntos"""
 
     def _send_ready(self):
-        for _ in range(MAX_RETRIES):
-            packet = encode(TYPE_READY, 0)
+        for i in range(READY_BURST):
+            packet = encode(TYPE_READY)
             self.ctx.send_packet(packet)
-            sleep(DELAY)  # medio segundo entre cada envío
+            if i < READY_BURST - 1:#Cuando se envia el ultimo ready, no duerme
+                sleep(READY_DELAY) 
 
     def _send_error(self):
         for _ in range(MAX_RETRIES):
