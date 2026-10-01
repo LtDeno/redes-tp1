@@ -6,7 +6,5 @@ if __name__ == "__main__":
     args = parser.get_arguments_download()
     parser.configure_logging(args)
     
-    print(args)
-    
     download = DownloadHandler(args)
     download.execute()

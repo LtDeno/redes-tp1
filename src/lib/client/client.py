@@ -20,5 +20,5 @@ class Client:
         try:
             data, _ = self.socket.recvfrom(BUFFER_SIZE)
             return data
-        except TimeoutError:
+        except socket.timeout:
             raise TimeoutError
