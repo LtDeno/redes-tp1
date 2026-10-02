@@ -4,7 +4,7 @@ from time import sleep
 from lib.common.constants import READY_DELAY, READY_BURST, MAX_RETRIES, DELAY, TYPE_ERROR, TYPE_READY
 from lib.common.fileHandler import FileHandler
 from lib.common.packet_utils import encode
-from lib.common.protocols import PROTCOLS
+from lib.common.protocols import PROTOCOLS
 from lib.server.logMessages import ERROR_READ_FILE, SENDING_FILE, SENT_FILE
 
 logger = logging.getLogger(__name__)
@@ -39,6 +39,6 @@ class DownloadHandler:
 
         self._send_ready()
         logger.info(SENDING_FILE.format(addr=self.ctx.addr, filename=filename))
-        protocol_instance = PROTCOLS[protocol](self.ctx)
+        protocol_instance = PROTOCOLS[protocol](self.ctx)
         protocol_instance.send_data(data)
         logger.info(SENT_FILE.format(addr=self.ctx.addr, filename=filename))

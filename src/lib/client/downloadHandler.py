@@ -25,7 +25,7 @@ from lib.common.constants import (
 )
 from lib.common.fileHandler import FileHandler
 from lib.common.packet_utils import decode, encode
-from lib.common.protocols import PROTCOLS
+from lib.common.protocols import PROTOCOLS
 from lib.common.request_utils import build_request
 
 logger = logging.getLogger(__name__)
@@ -96,7 +96,7 @@ class DownloadHandler:
         data = []
         file_handler = FileHandler(self.dst, self.filename)
         try:
-            protocol = PROTCOLS[self.protocol](self.client)
+            protocol = PROTOCOLS[self.protocol](self.client)
             protocol.recieve_data(data)
             if not data:
                 logger.error(ERROR_TRANSFER.format(error="no se recibieron datos"))

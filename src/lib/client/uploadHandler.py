@@ -25,7 +25,7 @@ from lib.common.constants import (
 )
 from lib.common.fileHandler import FileHandler
 from lib.common.packet_utils import decode, encode
-from lib.common.protocols import PROTCOLS
+from lib.common.protocols import PROTOCOLS
 from lib.common.request_utils import build_request
 
 logger = logging.getLogger(__name__)
@@ -90,7 +90,7 @@ class UploadHandler:
     def _transfer_file(self, data):
         logger.info(INIT_TRANS_DATA)
         try:
-            protocol = PROTCOLS[self.protocol](self.client)
+            protocol = PROTOCOLS[self.protocol](self.client)
             protocol.send_data(data)
             logger.info(SUCCESSFUL_UPLOAD.format(filename=self.filename))
         except Exception as e:

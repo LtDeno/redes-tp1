@@ -36,3 +36,11 @@ READY_WINDOW = 5.0     # ventana total del cliente para recibir READY (s)
 DELAY = 0.5
 QUEUE_TIMEOUT = 10
 RECEIVER_TIMEOUT = 4
+
+
+""" Selective Repeat """
+
+WINDOW_SIZE = 8
+SR_TIMEOUT = 0.52  # un poco mayor a 40ms, que es el RTT por consigna
+ACK_LISTENER_TIMEOUT = 0.05
+DATA_LISTENER_TIMEOUT = 0.10

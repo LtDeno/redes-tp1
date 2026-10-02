@@ -4,8 +4,9 @@ from time import sleep
 from lib.common.constants import READY_DELAY, READY_BURST, TYPE_READY
 from lib.common.fileHandler import FileHandler
 from lib.common.packet_utils import encode
-from lib.common.protocols import PROTCOLS
+from lib.common.protocols import PROTOCOLS
 from lib.server.logMessages import RECEIVING_FILE, SAVE_FILE
+from lib.protocol.transmissionProtocol import TransmissionProtocol
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ class UploadHandler:
         self._send_ready()
         logger.info(RECEIVING_FILE.format(addr=self.ctx.addr, filename=filename))
         data = []
-        protocol_instance = PROTCOLS[protocol](self.ctx)
+        protocol_instance: TransmissionProtocol = PROTOCOLS[protocol](self.ctx)
         protocol_instance.recieve_data(data) 
 
         file_handler = FileHandler(storage, filename)
