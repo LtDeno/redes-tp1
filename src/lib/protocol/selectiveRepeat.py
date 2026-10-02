@@ -83,6 +83,9 @@ class SelectiveRepeat(TransmissionProtocol):
                                 sender.buffer.pop(abs_seq_num)
                                 break
 
+                        while sender.send_base not in sender.buffer and sender.send_base < sender.next_seq_num:
+                            sender.send_base += 1
+
             except Exception:
                 pass
 

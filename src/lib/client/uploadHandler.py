@@ -15,7 +15,6 @@ from lib.client.logMessages import (
 from lib.common.constants import (
     ACTION_UPLOAD,
     HANDSHAKE_RETRIES,
-    READY_BURST_TIME,
     READY_WINDOW,
     CONFIRM_TIMEOUT,
     TYPE_ACK,
