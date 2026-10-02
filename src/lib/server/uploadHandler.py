@@ -22,15 +22,16 @@ class UploadHandler:
         for i in range(READY_BURST):
             packet = encode(TYPE_READY)
             self.ctx.send_packet(packet)
-            if i < READY_BURST - 1:#Cuando se envia el ultimo ready, no duerme
-                sleep(READY_DELAY) 
+            if i < READY_BURST - 1:  # Cuando se envia el ult ready, no duerme
+                sleep(READY_DELAY)
 
     def execute(self, storage, filename, protocol):
         self._send_ready()
-        logger.info(RECEIVING_FILE.format(addr=self.ctx.addr, filename=filename))
+        logger.info(RECEIVING_FILE.format(addr=self.ctx.addr,
+                                          filename=filename))
         data = []
         protocol_instance: TransmissionProtocol = PROTOCOLS[protocol](self.ctx)
-        protocol_instance.recieve_data(data) 
+        protocol_instance.receive_data(data)
 
         file_handler = FileHandler(storage, filename)
         file_handler.write(data)

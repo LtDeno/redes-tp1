@@ -1,7 +1,7 @@
 import logging
 from time import monotonic
 
-from lib.client.client import TIMEOUT, Client
+from lib.client.client import Client
 from lib.client.logMessages import (
     ERROR_TRANSFER,
     FAIL_CONNECTION,
@@ -49,16 +49,19 @@ class DownloadHandler:
             return False
 
     def _wait_for_ready(self):
-        """True = READY, False = ERROR (archivo inexistente), None = no llegó nada."""
+        """True = READY, False = ERROR (archivo inexistente),
+        None = no llegó nada."""
         limit = monotonic() + READY_WINDOW
         while True:
-            remaining = limit - monotonic()  # cuánto tiempo me queda de ventana
+            remaining = limit - monotonic()  # cuánto t me queda de ventana
             if remaining <= 0:
                 return None
             try:
-                #con timeout=min(remaining, CONFIRM_TIMEOUT) se evita que una 
-                                #espera se pase de la ventana total (Si quedan 0,4 s de ventana, espera 0,4 s y no 1 s)
-                packet = self.client.get_packet(timeout=min(remaining, CONFIRM_TIMEOUT))
+                """ con timeout=min(remaining, CONFIRM_TIMEOUT) se evita
+                que una espera se pase de la ventana total (Si quedan 0,4 s
+                de ventana, espera 0,4 s y no 1 s)"""
+                packet = self.client.get_packet(timeout=min(remaining,
+                                                            CONFIRM_TIMEOUT))
                 pack_type, _, _ = decode(packet)
                 if pack_type == TYPE_READY:
                     return True
@@ -71,7 +74,6 @@ class DownloadHandler:
                 self.client.send_packet(packet)
                 continue
 
-
     def _handshake(self, request):
         for i in range(HANDSHAKE_RETRIES):
             # Fase 1: START -> ACK
@@ -79,7 +81,8 @@ class DownloadHandler:
             self.client.send_packet(packet)
             if self._wait_for_ack():
                 break
-            logger.warning(TIMEOUT_ACK.format(num=i + 1, max_retries=HANDSHAKE_RETRIES))
+            logger.warning(TIMEOUT_ACK.format(num=i + 1,
+                                              max_retries=HANDSHAKE_RETRIES))
         else:
             return None
 
@@ -99,11 +102,13 @@ class DownloadHandler:
             protocol = PROTOCOLS[self.protocol](self.client)
             protocol.recieve_data(data)
             if not data:
-                logger.error(ERROR_TRANSFER.format(error="no se recibieron datos"))
+                logger.error(ERROR_TRANSFER.format(
+                    error="no se recibieron datos"))
                 return
             file_handler.write(data)
             logger.info(
-                SUCCESSFUL_DOWNLOAD.format(filename=self.filename, dst=self.dst)
+                SUCCESSFUL_DOWNLOAD.format(filename=self.filename,
+                                           dst=self.dst)
             )
         except Exception as e:
             logger.error(ERROR_TRANSFER.format(error=e))

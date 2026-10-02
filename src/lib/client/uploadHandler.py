@@ -1,7 +1,7 @@
 import logging
 from time import monotonic
 
-from lib.client.client import TIMEOUT, Client
+from lib.client.client import Client
 from lib.client.logMessages import (
     ERROR_FILE,
     ERROR_TRANSFER,
@@ -55,9 +55,11 @@ class UploadHandler:
             if remaining <= 0:
                 return None
             try:
-                #con timeout=min(remaining, CONFIRM_TIMEOUT) se evita que una 
-                #espera se pase de la ventana total (Si quedan 0,4 s de ventana, espera 0,4 s y no 1 s)
-                packet = self.client.get_packet(timeout=min(remaining, CONFIRM_TIMEOUT))
+                """ con timeout=min(remaining, CONFIRM_TIMEOUT) se evita
+                que una espera se pase de la ventana total (Si quedan 0,4 s
+                de ventana, espera 0,4 s y no 1 s)"""
+                packet = self.client.get_packet(timeout=min(remaining,
+                                                            CONFIRM_TIMEOUT))
                 pack_type, _, _ = decode(packet)
                 if pack_type == TYPE_READY:
                     return True
@@ -74,7 +76,8 @@ class UploadHandler:
             self.client.send_packet(packet)
             if self._wait_for_ack():
                 break
-            logger.warning(TIMEOUT_ACK.format(num=i + 1, max_retries=HANDSHAKE_RETRIES))
+            logger.warning(TIMEOUT_ACK.format(num=i + 1,
+                                              max_retries=HANDSHAKE_RETRIES))
         else:
             return None
 

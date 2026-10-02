@@ -7,5 +7,5 @@ class TransmissionProtocol(ABC):
         pass
 
     @abstractmethod
-    def recieve_data(self, chunks: list[bytes]):
+    def receive_data(self, chunks: list[bytes]):
         pass

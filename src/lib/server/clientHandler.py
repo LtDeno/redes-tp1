@@ -47,8 +47,9 @@ class ClientHandler(threading.Thread):
         result = ()
         while True:
             try:
-                """timeout=QUEUE_TIMEOUT, si pasan 10 segundos sin nada, .get() lanza Empty, 
-                el except lo convierte en return None, handle() cae al finally y libera todo"""
+                """timeout=QUEUE_TIMEOUT, si pasan 10 segundos sin nada,
+                .get() lanza Empty, el except lo convierte en return None,
+                handle() cae al finally y libera todo"""
                 request = self.queue.get(timeout=QUEUE_TIMEOUT)
             except Empty:
                 return None
@@ -71,13 +72,13 @@ class ClientHandler(threading.Thread):
 
     def recv_data(self, data):
         self.queue.put(data)
-        
-    def get_packet(self,timeout=RECEIVER_TIMEOUT):
+
+    def get_packet(self, timeout=RECEIVER_TIMEOUT):
         try:
             return self.queue.get(timeout=timeout)
         except Empty:
             raise TimeoutError
-        
+
     def send_packet(self, packet):
         self.socket.sendto(packet, self.addr)
 
@@ -97,7 +98,8 @@ class ClientHandler(threading.Thread):
             )
             handler_cls = ACTIONS.get(action)
             if not handler_cls:
-                logger.error(ERROR_UNKNOWN_ACTION.format(addr=self.addr, action=action))
+                logger.error(ERROR_UNKNOWN_ACTION.format(addr=self.addr,
+                                                         action=action))
                 return
             handler_cls(self).execute(self.storage, filename, protocol)
         except Exception as error:

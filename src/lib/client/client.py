@@ -6,7 +6,7 @@ TIMEOUT = 2.0
 
 class Client:
     def __init__(self, host, port):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # Socket UDP
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.server_addr = (host, port)
 
     def finish(self):

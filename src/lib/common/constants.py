@@ -23,12 +23,12 @@ HEADER_SIZE = TYPE_PACKET_SIZE + SEQ_NUMB_SIZE
 REQUEST_SIZE = 3
 PAYLOAD_SIZE = 2900  # A priori, lo podemos cambiar mas adelante.
 
-HANDSHAKE_RETRIES = 10  
+HANDSHAKE_RETRIES = 10
 
 MAX_RETRIES = 10
 
 READY_BURST = 3        # cantidad de READY
-READY_DELAY = 0.05    
+READY_DELAY = 0.05
 CONFIRM_TIMEOUT = 1.0  # reintento de CONFIRM en el cliente
 READY_WINDOW = 5.0     # ventana total del cliente para recibir READY (s)
 
@@ -38,9 +38,10 @@ QUEUE_TIMEOUT = 10
 RECEIVER_TIMEOUT = 4
 
 
-""" Selective Repeat """
+""" Protocols """
 
 WINDOW_SIZE = 8
-SR_TIMEOUT = 0.52  # un poco mayor a 40ms, que es el RTT por consigna
-ACK_LISTENER_TIMEOUT = 0.05
-DATA_LISTENER_TIMEOUT = 0.10
+SR_TIMEOUT = 0.080  # un poco mayor a 40ms, que es el RTT por consigna
+SW_TIMEOUT = 0.200
+ACK_LISTENER_TIMEOUT = 0.050
+DATA_LISTENER_TIMEOUT = 0.100

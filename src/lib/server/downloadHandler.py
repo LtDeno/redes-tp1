@@ -1,7 +1,8 @@
 import logging
 from time import sleep
 
-from lib.common.constants import READY_DELAY, READY_BURST, MAX_RETRIES, DELAY, TYPE_ERROR, TYPE_READY
+from lib.common.constants import (READY_DELAY, READY_BURST, MAX_RETRIES,
+                                  DELAY, TYPE_ERROR, TYPE_READY)
 from lib.common.fileHandler import FileHandler
 from lib.common.packet_utils import encode
 from lib.common.protocols import PROTOCOLS
@@ -14,14 +15,15 @@ class DownloadHandler:
     def __init__(self, ctx):
         self.ctx = ctx  # referencia al ClientHandler
 
-    """Se agrega un agregar un delay entre reintentos para que no se disparén todos juntos"""
+    """Se agrega un agregar un delay entre reintentos
+    para que no se disparén todos juntos"""
 
     def _send_ready(self):
         for i in range(READY_BURST):
             packet = encode(TYPE_READY)
             self.ctx.send_packet(packet)
-            if i < READY_BURST - 1:#Cuando se envia el ultimo ready, no duerme
-                sleep(READY_DELAY) 
+            if i < READY_BURST - 1:  # Cuando se envia el ult ready, no duerme
+                sleep(READY_DELAY)
 
     def _send_error(self):
         for _ in range(MAX_RETRIES):
@@ -33,12 +35,14 @@ class DownloadHandler:
         file_handler = FileHandler(storage, filename)
         data = file_handler.read()
         if not data:
-            logger.error(ERROR_READ_FILE.format(addr=self.ctx.addr, filename=filename))
+            logger.error(ERROR_READ_FILE.format(addr=self.ctx.addr,
+                                                filename=filename))
             self._send_error()
             return
 
         self._send_ready()
-        logger.info(SENDING_FILE.format(addr=self.ctx.addr, filename=filename))
+        logger.info(SENDING_FILE.format(addr=self.ctx.addr,
+                                        filename=filename))
         protocol_instance = PROTOCOLS[protocol](self.ctx)
         protocol_instance.send_data(data)
         logger.info(SENT_FILE.format(addr=self.ctx.addr, filename=filename))

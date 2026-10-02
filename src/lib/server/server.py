@@ -20,7 +20,7 @@ class Server:
     def __init__(self, address, storage):
         self.addr = address  # addr = (host, port)
         self.storage = storage
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # socket UDP
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.clients = {}
         self.lock = threading.Lock()
 
@@ -47,7 +47,8 @@ class Server:
     def start(self):
         self._create_storage()
         self.socket.bind(self.addr)
-        logger.info(SERVER_LISTENING.format(host=self.addr[HOST], port=self.addr[PORT]))
+        logger.info(SERVER_LISTENING.format(host=self.addr[HOST],
+                                            port=self.addr[PORT]))
 
         while True:
             try:

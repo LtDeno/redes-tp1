@@ -28,8 +28,8 @@ class FileHandler:
             return
         try:
             logger.debug(
-                CREATE_FILE.format(filename=self.name, base_path=self.base_path)
-            )
+                CREATE_FILE.format(filename=self.name,
+                                   base_path=self.base_path))
 
             self.path.parent.mkdir(parents=True, exist_ok=True)
             with self.path.open("wb") as f:
@@ -39,7 +39,8 @@ class FileHandler:
         except OSError:
             logger.exception(ERROR_PROCESS_FILE.format(file_path=self.path))
 
-    """Lee el archivo completo en bytes y los devuelve solo si la lectura fue exitosa."""
+    """Lee el archivo completo en bytes y los devuelve
+    solo si la lectura fue exitosa."""
 
     def read(self):
         chunks = []
