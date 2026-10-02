@@ -39,10 +39,10 @@ class Server:
             self.clients[addr] = ClientHandler(
                 addr, self.socket, self.storage, self._remove_client
             )
-            self.clients[addr].get_packet(data)
+            self.clients[addr].recv_data(data)
             self.clients[addr].start()
         else:
-            self.clients[addr].get_packet(data)
+            self.clients[addr].recv_data(data)
 
     def start(self):
         self._create_storage()

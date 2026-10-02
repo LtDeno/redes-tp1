@@ -6,6 +6,7 @@ from lib.common.constants import (
     ACTION_DOWNLOAD,
     ACTION_UPLOAD,
     QUEUE_TIMEOUT,
+    RECEIVER_TIMEOUT,
     REQUEST_SIZE,
     TYPE_ACK,
     TYPE_CONFIRM,
@@ -68,9 +69,15 @@ class ClientHandler(threading.Thread):
             ):  # Tenemos QUEUE_TIMEOUT=10s para recibir el confirm
                 return result  # handshake completo
 
-    def get_packet(self, data):
+    def recv_data(self, data):
         self.queue.put(data)
-
+        
+    def get_packet(self,timeout=RECEIVER_TIMEOUT):
+        try:
+            return self.queue.get(timeout=timeout)
+        except Empty:
+            raise TimeoutError
+        
     def send_packet(self, packet):
         self.socket.sendto(packet, self.addr)
 
