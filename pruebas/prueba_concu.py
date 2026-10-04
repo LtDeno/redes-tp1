@@ -10,10 +10,19 @@ from mininet.node import OVSKernelSwitch, RemoteController
 server_host = "10.0.0.1"
 server_port = "8080"
 protocol = "sr"
-server_path = "../src/start-server.py"
-up_path = "../src/upload.py"
-down_path = "../src/download.py"
-storage_path = "../storage/"
+
+tp_path = "/home/deno/redes-tp1/"
+
+server_path = tp_path + "src/start-server.py"
+up_path = tp_path + "src/upload.py"
+down_path = tp_path + "src/download.py"
+storage_path = tp_path + "storage/"
+
+test_files_path = tp_path + "pruebas/"
+up1_name = "up1.txt"
+up2_name = "up2.txt"
+down1_name = "down1.txt"
+down2_name = "down2.txt"
 
 
 def run_concurrency_test():
@@ -43,38 +52,38 @@ def run_concurrency_test():
                 " -H " + server_host + 
                 " -p " + server_port +
                 " -s " + storage_path +
-                " > client1.log 2>&1 &")
+                " > server.log 2>&1 &")
   time.sleep(3)
 
   info("--- En paralelo, 2 uploads y 2 downloads desde diferente shosts ---\n")
   h_client1.cmd("python3 " + up_path + 
                 " -H " + server_host + 
                 " -p " + server_port + 
-                " -s up1.txt"
-                " -n upd1.txt"
+                " -s " + test_files_path +
+                " -n " + up1_name +
                 " -r " + protocol +
                 " > client1.log 2>&1 &")
   h_client2.cmd("python3 " + up_path + 
                 " -H " + server_host + 
                 " -p " + server_port + 
-                " -s up2.txt"
-                " -n upd2.txt"
+                " -s " + test_files_path +
+                " -n " + up2_name +
                 " -r " + protocol +
                 " > client2.log 2>&1 &")
   h_client3.cmd("python3 " + down_path + 
                 " -H " + server_host + 
                 " -p " + server_port + 
-                " -s down1.txt"
-                " -n downd1.txt"
+                " -d " + test_files_path +
+                " -n " + down1_name +
                 " -r " + protocol +
-                " > client1.log 2>&1 &")
+                " > client3.log 2>&1 &")
   h_client4.cmd("python3 " + down_path + 
                 " -H " + server_host + 
                 " -p " + server_port + 
-                " -s down2.txt"
-                " -n downd2.txt"
+                " -d " + test_files_path +
+                " -n " + down2_name +
                 " -r " + protocol +
-                " > client1.log 2>&1 &")
+                " > client4.log 2>&1 &")
 
   CLI(net)
 
