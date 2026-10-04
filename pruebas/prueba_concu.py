@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
 import time
-from mininet.cli import CLI
-from mininet.link import TCLink
-from mininet.log import setLogLevel, info
 from mininet.net import Mininet
-from mininet.node import OVSKernelSwitch, RemoteController
+from mininet.node import OVSController, OVSKernelSwitch, Controller
+from mininet.link import TCLink
+from mininet.cli import CLI
+from mininet.log import setLogLevel, info
 
-server_host = "10.0.0.1"
+
+first_octet = "10"
+server_host = first_octet + ".0.0.1"
 server_port = "8080"
 protocol = "sr"
 
@@ -26,30 +28,33 @@ down2_name = "down2.txt"
 
 
 def run_concurrency_test():
-  net = Mininet(topo=None, build=False, ipBase="10.0.0.0/8", switch=OVSKernelSwitch)
+  net = Mininet(controller=OVSController, link=TCLink)
 
-  info("--- Agregando componentes a la topología ---\n")
+  info("--- Agregando controlador, switch y hosts ---\n")
+
+  net.addController("c0")
+
   h_server = net.addHost("h1", ip=server_host)
-  h_client1 = net.addHost("h2", ip="10.0.0.2")
-  h_client2 = net.addHost("h3", ip="10.0.0.3")
-  h_client3 = net.addHost("h4", ip="10.0.0.4")
-  h_client4 = net.addHost("h5", ip="10.0.0.5")
+  h_client1 = net.addHost("h2", ip=first_octet + ".0.0.2")
+  h_client2 = net.addHost("h3", ip=first_octet + ".0.0.3")
+  h_client3 = net.addHost("h4", ip=first_octet + ".0.0.4")
+  h_client4 = net.addHost("h5", ip=first_octet + ".0.0.5")
 
-  switch = net.addSwitch("s1", cls=OVSKernelSwitch)
+  switch = net.addSwitch("s1")
 
-  info("--- Conectando enlaces con pérdida de 10% y delay ---\n")
-  net.addLink(h_server, switch, cls=TCLink, loss=10, delay="20ms")
-  net.addLink(h_client1, switch, cls=TCLink, loss=10, delay="20ms")
-  net.addLink(h_client2, switch, cls=TCLink, loss=10, delay="20ms")
-  net.addLink(h_client3, switch, cls=TCLink, loss=10, delay="20ms")
-  net.addLink(h_client4, switch, cls=TCLink, loss=10, delay="20ms")
+  info("--- Conectando enlaces con pérdida de 10% y RTTs de 40ms ---\n")
+  net.addLink(h_server, switch, loss=10, delay="20ms")
+  net.addLink(h_client1, switch, loss=10, delay="20ms")
+  net.addLink(h_client2, switch, loss=10, delay="20ms")
+  net.addLink(h_client3, switch, loss=10, delay="20ms")
+  net.addLink(h_client4, switch, loss=10, delay="20ms")
 
   info("--- Iniciando red ---\n")
   net.start()
 
   info("--- Iniciando servidor ---\n")
   h_server.cmd("python3 " + server_path + 
-                " -H " + server_host + 
+                " -H  0.0.0.0" + 
                 " -p " + server_port +
                 " -s " + storage_path +
                 " > server.log 2>&1 &")
@@ -92,4 +97,5 @@ def run_concurrency_test():
 
 
 if __name__ == "__main__":
+  setLogLevel("info")
   run_concurrency_test()
