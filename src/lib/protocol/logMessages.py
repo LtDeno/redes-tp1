@@ -12,7 +12,7 @@ SEND_DATA_PACKET = "DATA enviado - Nro. de secuencia: {seq_num}"
 SEND_ACK_DATA    = "ACK enviado - Nro. de secuencia: {seq_num}"
 
 RECV_ACK_DATA = "Recibido ACK - Nro. de secuencia: {seq_num}"
-RECV_DATA = "Paquete con Nro. de secuencia recibido correctamente: {seq_num}"
+RECV_DATA = "Recibido DATA - Nro. de secuencia recibido correctamente: {seq_num}"
 NO_DATA_RECEIVED = "Recepcion abandonada: no llego ningun DATA en {timeout}(s)"
 
 TRANSFER_INCOMPLETE = "Recepcion abandonada tras {timeout}s - {received} chunks recibidos - Archivo incompleto, no se guardo"

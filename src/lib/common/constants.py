@@ -41,10 +41,17 @@ RECEIVER_TIMEOUT = 4
 
 
 """ Protocols """
+
+DATA_LISTENER_TIMEOUT = 0.100
+IDLE_TIMEOUT = 5.0 
+
+#Stop And Wait
+SW_TIMEOUT = 0.07 #0.200
+SW_ACK_LISTENER_TIMEOUT = 0.005 
+SW_STALL_TIMEOUT = 10.0 
+
+#Selective Repeat
 WINDOW_SIZE = 8
 SR_TIMEOUT = 0.080  # un poco mayor a 40ms, que es el RTT por consigna
-SW_TIMEOUT = 0.200
-ACK_LISTENER_TIMEOUT = 0.050
-DATA_LISTENER_TIMEOUT = 0.100
-
-SR_STALL_TIMEOUT = 1.0   # sin ACK util, el emisor se da por muerto
+SR_STALL_TIMEOUT = 10.0 #1.0   # sin ACK util, el emisor se da por muerto
+SR_ACK_LISTENER_TIMEOUT = 0.050

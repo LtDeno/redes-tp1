@@ -1,15 +1,18 @@
+from __future__ import annotations
 import time
 import logging
 from lib.protocol.transmissionProtocol import TransmissionProtocol
 from lib.common.constants import (
     WINDOW_SIZE,
     SR_TIMEOUT,
-    ACK_LISTENER_TIMEOUT,
+    SR_STALL_TIMEOUT,
+    IDLE_TIMEOUT,
+    SR_ACK_LISTENER_TIMEOUT,
     TYPE_DATA,
     TYPE_ACK,
     TYPE_FIN,
     DATA_LISTENER_TIMEOUT,
-    SR_STALL_TIMEOUT
+   
 )
 from lib.protocol.logMessages import (
     DISCARD_DUP,
@@ -104,7 +107,7 @@ class SelectiveRepeat(TransmissionProtocol):
                 sender.next_seq_num += 1
 
             try:
-                ack_packet = self.ctx.get_packet(timeout=ACK_LISTENER_TIMEOUT)
+                ack_packet = self.ctx.get_packet(timeout=SR_ACK_LISTENER_TIMEOUT)
                 packet_type, ack_num, _ = decode(ack_packet)
                 if packet_type == TYPE_ACK:
                     acked = None
@@ -141,7 +144,7 @@ class SelectiveRepeat(TransmissionProtocol):
         return self._send_fin()
 
     def receive_data(self, chunks):
-        receiver = Receiver(self.timeout * 3)
+        receiver = Receiver(IDLE_TIMEOUT)#Receiver(self.timeout * 3)
 
         while receiver.receive:
             try:
@@ -151,7 +154,6 @@ class SelectiveRepeat(TransmissionProtocol):
                 packet_type, seq_num, payload = decode(packet)
 
                 if packet_type == TYPE_FIN:
-                    # receiver.receive = False
                     self._recv_fin()
                     return True
 
