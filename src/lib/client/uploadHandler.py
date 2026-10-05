@@ -11,10 +11,12 @@ from lib.client.logMessages import (
     SUCCESSFUL_UPLOAD,
     TIMEOUT_ACK,
     TIMEOUT_READY,
+    FIN_NOT_CONFIRMED
 )
 from lib.common.constants import (
     ACTION_UPLOAD,
     HANDSHAKE_RETRIES,
+    MAX_RETRIES,
     READY_WINDOW,
     CONFIRM_TIMEOUT,
     TYPE_ACK,
@@ -93,7 +95,8 @@ class UploadHandler:
         logger.info(INIT_TRANS_DATA)
         try:
             protocol = PROTOCOLS[self.protocol](self.client)
-            protocol.send_data(data)
+            if not protocol.send_data(data):
+                logger.warning(FIN_NOT_CONFIRMED.format(max_retries=MAX_RETRIES, chunks=len(data))) 
             logger.info(SUCCESSFUL_UPLOAD.format(filename=self.filename))
         except Exception as e:
             logger.error(ERROR_TRANSFER.format(error=e))

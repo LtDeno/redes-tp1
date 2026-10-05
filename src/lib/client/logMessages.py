@@ -23,3 +23,8 @@ REQUEST_UPLOAD = "Preparando subida del archivo: {filename}"
 INIT_TRANS_DATA = "Conexion establecida - Iniciando transferencia de datos..."
 SUCCESSFUL_UPLOAD = "Subida del archivo '{filename}' finalizada"
 ERROR_FILE = "No se pudo leer el archivo '{filename}'."
+FIN_NOT_CONFIRMED = (
+    "Cierre de sesion no confirmado tras {max_retries} intentos - "
+    "Los {chunks} chunks fueron confirmados por el receptor, "
+    "pero puede no haber guardado el archivo"
+)
