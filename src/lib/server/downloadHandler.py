@@ -6,7 +6,7 @@ from lib.common.constants import (READY_DELAY, READY_BURST, MAX_RETRIES,
 from lib.common.fileHandler import FileHandler
 from lib.common.packet_utils import encode
 from lib.common.protocols import PROTOCOLS
-from lib.server.logMessages import ERROR_READ_FILE, SENDING_FILE, SENT_FILE
+from lib.server.logMessages import ERROR_READ_FILE, SENDING_FILE, SENT_FILE, FIN_NOT_CONFIRMED
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class DownloadHandler:
 
     def _send_error(self):
         for _ in range(MAX_RETRIES):
-            packet = encode(TYPE_ERROR, 0)
+            packet = encode(TYPE_ERROR)
             self.ctx.send_packet(packet)
             sleep(DELAY)  # medio segundo entre cada envío
 
@@ -44,5 +44,7 @@ class DownloadHandler:
         logger.info(SENDING_FILE.format(addr=self.ctx.addr,
                                         filename=filename))
         protocol_instance = PROTOCOLS[protocol](self.ctx)
-        protocol_instance.send_data(data)
+        if not protocol_instance.send_data(data):
+            logger.warning(FIN_NOT_CONFIRMED.format(max_retries=MAX_RETRIES, chunks=len(data)))
         logger.info(SENT_FILE.format(addr=self.ctx.addr, filename=filename))
+    

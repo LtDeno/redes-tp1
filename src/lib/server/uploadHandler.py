@@ -5,7 +5,7 @@ from lib.common.constants import READY_DELAY, READY_BURST, TYPE_READY
 from lib.common.fileHandler import FileHandler
 from lib.common.packet_utils import encode
 from lib.common.protocols import PROTOCOLS
-from lib.server.logMessages import RECEIVING_FILE, SAVE_FILE
+from lib.server.logMessages import RECEIVING_FILE, SAVE_FILE, SAVE_FILE_SKIPPED
 from lib.protocol.transmissionProtocol import TransmissionProtocol
 
 logger = logging.getLogger(__name__)
@@ -31,8 +31,9 @@ class UploadHandler:
                                           filename=filename))
         data = []
         protocol_instance: TransmissionProtocol = PROTOCOLS[protocol](self.ctx)
-        protocol_instance.receive_data(data)
-
+        if not protocol_instance.receive_data(data):
+            logger.error(SAVE_FILE_SKIPPED.format(addr=self.ctx.addr, filename=filename))
+            return 
         file_handler = FileHandler(storage, filename)
         file_handler.write(data)
         logger.info(SAVE_FILE.format(addr=self.ctx.addr, filename=filename))
