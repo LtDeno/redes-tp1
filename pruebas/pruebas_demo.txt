@@ -1,0 +1,9 @@
+Durante la demo se deberán realizar las siguientes pruebas:
+
+Configuración de la topología: levantar la topología con una pérdida de paquetes del 10 % en cada sentido de la comunicación y un RTT de 40 ms.
+Verificación de la conectividad: comprobar, mediante ping, que la topología cumple con los parámetros de red requeridos.
+Transferencia de un archivo de 5 MB: realizar una transferencia utilizando el protocolo con pipelining.  La transferencia deberá completarse en menos de 2 minutos.
+Verificación de retransmisiones: mostrar, mediante Wireshark o usando las estadísticas del host cliente, que la cantidad de retransmisiones observada es consistente con la estimación realizada a partir de la tasa de pérdida de paquetes configurada.
+Prueba de concurrencia: demostrar que la aplicación funciona correctamente con múltiples clientes operando en simultáneo. Para ello, se deberán ejecutar en paralelo dos uploads y dos downloads desde diferentes hosts clientes.
+Cambio de las condiciones de red: reiniciar la topología utilizando un nuevo valor de delay indicado por el docente.
+Nueva transferencia: realizar una transferencia de un archivo de 1 MB y comprobar que la cantidad de retransmisiones observada es consistente con la estimación correspondiente a las nuevas condiciones de red.
