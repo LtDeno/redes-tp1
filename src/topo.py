@@ -22,8 +22,8 @@ def myNetwork():
     # Se configura la perdida y el retraso
     # Para RTT 40 ms que pide el enunciado, necesito 10 ms por enlace 
     # Para ver mejor las retrasmisiones durante las pruebas aumenten el delay -> Para cumplir condicion de operar hasta con valores de RTT de hasta 300ms)
-    net.addLink(h1, s1, loss=10, delay="50ms")
-    net.addLink(h2, s1, loss=0, delay="100ms")
+    net.addLink(h1, s1, loss=10, delay="100ms")
+    net.addLink(h2, s1, loss=0, delay="50ms")
 
     print("--- Iniciando red ---")
     net.start()

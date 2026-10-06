@@ -5,7 +5,7 @@ RECV_FIN_RETRANSMIT = "FIN reenviado - El FIN_ACK anterior no llego, reenviando 
 ERROR_FIN_ACK = "No se recibio FIN_ACK despues de {max_retries} intentos"
 
 
-
+WINDOW_SLIDE = "Ventana deslizada - {delivered} chunks entregados en orden - recv_base={base} - Ultimo seq_num de red {seq}"
 DISCARD_DUP = "DATA seq_num [{seq_num}] descartado - Se esperaba seq_num [{expected}]"
 
 SEND_DATA_PACKET = "DATA enviado - Nro. de secuencia: {seq_num}"

@@ -18,9 +18,9 @@ from lib.protocol.logMessages import (
     DISCARD_DUP,
     NO_DATA_RECEIVED,
     RECV_ACK_DATA,
-    RECV_DATA,
     SEND_ACK_DATA,
     SEND_DATA_PACKET,
+    WINDOW_SLIDE,
     RETRY_DATA,
     TRANSFER_INCOMPLETE,
     STALE_ACK,
@@ -173,22 +173,23 @@ class SelectiveRepeat(TransmissionProtocol):
 
                     elif receiver.recv_base + self.window > abs_seq_num: #receiver.recv_base < abs_seq_num + self.window:
                         receiver.buffer[abs_seq_num] = (b"" if payload is None else payload)
-
+                        delivered = 0
                         while receiver.recv_base in receiver.buffer:
                             chunks.append(receiver.buffer.pop(receiver.recv_base))
                             receiver.recv_base += 1
-                            logger.debug(RECV_DATA.format(seq_num=receiver.recv_base - 1))
+                            #logger.debug(RECV_DATA.format(seq_num=receiver.recv_base - 1))
+                            delivered += 1
+                        
+                        if delivered:
+                            logger.debug(WINDOW_SLIDE.format(delivered=delivered, base=receiver.recv_base, seq=(receiver.recv_base-1) % self.max_seq_num))
 
                     else:
                         logger.debug(
                             DISCARD_DUP.format(seq_num=seq_num, expected=window_idx))
 
-
             except TimeoutError:
                 pass
             
-            # except Exception as err:
-            #     logger.warning(f"Paquete inesperado descartado: {err}")
 
             receiver.check_fin_timeout()
         if receiver.recv_base == 0:

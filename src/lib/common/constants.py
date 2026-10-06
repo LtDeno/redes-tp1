@@ -22,13 +22,10 @@ HEADER_SIZE = TYPE_PACKET_SIZE + SEQ_NUMB_SIZE
 
 REQUEST_SIZE = 3
 PAYLOAD_SIZE = 2900  # A priori, lo podemos cambiar mas adelante.
-
 NO_SEQ = -1   #Para representar que "este paquete no lleva número de secuencia"
 
-HANDSHAKE_RETRIES = 10
-
 MAX_RETRIES = 10
-
+HANDSHAKE_RETRIES = 10
 READY_BURST = 3        # cantidad de READY
 READY_DELAY = 0.05
 CONFIRM_TIMEOUT = 1.0  # reintento de CONFIRM en el cliente
@@ -37,7 +34,7 @@ READY_WINDOW = 5.0     # ventana total del cliente para recibir READY (s)
 """TIMEOUTS"""
 DELAY = 0.5
 QUEUE_TIMEOUT = 10
-RECEIVER_TIMEOUT = 4
+RECEIVER_TIMEOUT = 4 #usado en clientHandler
 
 
 """ Protocols """
