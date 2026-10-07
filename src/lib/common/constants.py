@@ -23,7 +23,7 @@ HEADER_SIZE = TYPE_PACKET_SIZE + SEQ_NUMB_SIZE
 REQUEST_SIZE = 3
 PAYLOAD_SIZE = 2900  # A priori, lo podemos cambiar mas adelante.
 
-NO_SEQ = -1   #Para representar que "este paquete no lleva número de secuencia"
+NO_SEQ = -1  # Para representar que "este paquete no lleva número de secuencia"
 
 HANDSHAKE_RETRIES = 10
 

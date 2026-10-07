@@ -32,8 +32,9 @@ class UploadHandler:
         data = []
         protocol_instance: TransmissionProtocol = PROTOCOLS[protocol](self.ctx)
         if not protocol_instance.receive_data(data):
-            logger.error(SAVE_FILE_SKIPPED.format(addr=self.ctx.addr, filename=filename))
-            return 
+            logger.error(SAVE_FILE_SKIPPED.format(addr=self.ctx.addr,
+                                                  filename=filename))
+            return
         file_handler = FileHandler(storage, filename)
         file_handler.write(data)
         logger.info(SAVE_FILE.format(addr=self.ctx.addr, filename=filename))

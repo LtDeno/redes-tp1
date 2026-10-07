@@ -28,6 +28,7 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class UnAckedPacket:
     packet: bytes
@@ -42,7 +43,8 @@ class Sender:
         self.buffer: dict[int, UnAckedPacket] = {}
 
     def slide_window(self):
-        while self.send_base not in self.buffer and self.send_base < self.next_seq_num:
+        while (self.send_base not in self.buffer
+               and self.send_base < self.next_seq_num):
             self.send_base += 1
 
 
@@ -58,8 +60,8 @@ class Receiver:
         self.last_received_time = time.monotonic()
 
     def check_fin_timeout(self):
-        #and len(self.buffer) == 0
-        #and self.recv_base > 0
+        # and len(self.buffer) == 0
+        # and self.recv_base > 0
         if (
             time.monotonic() - self.last_received_time > self.fin_timeout
         ):
@@ -72,13 +74,13 @@ class SelectiveRepeat(TransmissionProtocol):
         self.window = WINDOW_SIZE
         self.max_seq_num = 2 * WINDOW_SIZE + 1
         self.stall_timeout = SR_STALL_TIMEOUT
-        
 
     def _retry_timeouts(self, buffer: dict[int, UnAckedPacket]):
         now = time.monotonic()
         for _, unackd_packet in list(buffer.items()):
             if now - unackd_packet.time > self.timeout:
-                logger.debug(RETRY_DATA.format(timeout=self.timeout, seq_num=unackd_packet.seq_num))
+                logger.debug(RETRY_DATA.format(timeout=self.timeout,
+                                               seq_num=unackd_packet.seq_num))
                 self.ctx.send_packet(unackd_packet.packet)
                 unackd_packet.time = now
 
@@ -91,16 +93,22 @@ class SelectiveRepeat(TransmissionProtocol):
         sender = Sender()
         last_send_base = 0
         stall_deadline = time.monotonic() + self.stall_timeout
-        
+
         while sender.send_base < total_chunks:
-            while (sender.next_seq_num < sender.send_base + self.window) and (sender.next_seq_num < total_chunks):
+            while (sender.next_seq_num < sender.send_base + self.window
+                   and sender.next_seq_num < total_chunks):
                 seq_num = sender.next_seq_num % self.max_seq_num
 
-                packet = encode(TYPE_DATA, seq_num, chunks[sender.next_seq_num])
+                packet = encode(TYPE_DATA, seq_num,
+                                chunks[sender.next_seq_num])
                 logger.debug(SEND_DATA_PACKET.format(seq_num=seq_num))
                 self.ctx.send_packet(packet)
 
-                sender.buffer[sender.next_seq_num] = UnAckedPacket(packet, time.monotonic(), seq_num)
+                sender.buffer[sender.next_seq_num] = UnAckedPacket(
+                    packet,
+                    time.monotonic(),
+                    seq_num
+                )
                 sender.next_seq_num += 1
 
             try:
@@ -130,7 +138,7 @@ class SelectiveRepeat(TransmissionProtocol):
                 last_send_base = sender.send_base
 
             if time.monotonic() > stall_deadline:
-                logger.error( ERROR_SEND_STALL.format(
+                logger.error(ERROR_SEND_STALL.format(
                         timeout=self.stall_timeout,
                         confirmed=sender.send_base,
                         total=total_chunks,
@@ -146,7 +154,7 @@ class SelectiveRepeat(TransmissionProtocol):
         while receiver.receive:
             try:
                 packet = self.ctx.get_packet(timeout=DATA_LISTENER_TIMEOUT)
-                
+
                 receiver.punch_clock()
                 packet_type, seq_num, payload = decode(packet)
 
@@ -165,26 +173,32 @@ class SelectiveRepeat(TransmissionProtocol):
                     ack_packet = encode(TYPE_ACK, seq_num)
                     logger.debug(SEND_ACK_DATA.format(seq_num=seq_num))
                     self.ctx.send_packet(ack_packet)
-                    
-                    if abs_seq_num < receiver.recv_base:
-                        logger.debug(DISCARD_DUP.format(seq_num=seq_num, expected=window_idx))
 
-                    elif receiver.recv_base + self.window > abs_seq_num: #receiver.recv_base < abs_seq_num + self.window:
-                        receiver.buffer[abs_seq_num] = (b"" if payload is None else payload)
+                    if abs_seq_num < receiver.recv_base:
+                        logger.debug(DISCARD_DUP.format(seq_num=seq_num,
+                                                        expected=window_idx))
+
+                    elif receiver.recv_base + self.window > abs_seq_num:
+                        # receiver.recv_base < abs_seq_num + self.window:
+                        receiver.buffer[abs_seq_num] = (b"" if payload is None
+                                                        else payload)
 
                         while receiver.recv_base in receiver.buffer:
-                            chunks.append(receiver.buffer.pop(receiver.recv_base))
+                            chunks.append(
+                                receiver.buffer.pop(receiver.recv_base))
                             receiver.recv_base += 1
-                            logger.debug(RECV_DATA.format(seq_num=receiver.recv_base - 1))
+                            logger.debug(
+                                RECV_DATA.format(
+                                    seq_num=receiver.recv_base - 1))
 
                     else:
                         logger.debug(
-                            DISCARD_DUP.format(seq_num=seq_num, expected=window_idx))
-
+                            DISCARD_DUP.format(seq_num=seq_num,
+                                               expected=window_idx))
 
             except TimeoutError:
                 pass
-            
+
             # except Exception as err:
             #     logger.warning(f"Paquete inesperado descartado: {err}")
 

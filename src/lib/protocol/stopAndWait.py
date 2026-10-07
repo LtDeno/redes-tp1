@@ -44,14 +44,14 @@ class Receiver:
         self.last_received_time = time.monotonic()
 
     def check_fin_timeout(self):
-        idle_too_long = time.monotonic() - self.last_received_time > self.fin_timeout
+        idle_too_long = (time.monotonic()
+                         - self.last_received_time > self.fin_timeout)
         # received_data = self.expected_seq_num > 0
         # if idle_too_long and received_data:
-            # self.receive = False
+        # self.receive = False
         if not idle_too_long:
             return
         self.receive = False
-        
 
 
 class StopAndWait(TransmissionProtocol):
@@ -67,7 +67,8 @@ class StopAndWait(TransmissionProtocol):
 
         while sender.abs_seq_num < total_chunks:
             wrapped_seq_num = sender.seq_num % 2
-            packet = encode(TYPE_DATA, wrapped_seq_num, chunks[sender.abs_seq_num])
+            packet = encode(TYPE_DATA, wrapped_seq_num,
+                            chunks[sender.abs_seq_num])
 
             packet_acknowledged = False
             while not packet_acknowledged:
@@ -77,9 +78,11 @@ class StopAndWait(TransmissionProtocol):
 
                 while time.monotonic() - start_time < self.timeout:
                     try:
-                        ack_packet = self.ctx.get_packet(timeout=ACK_LISTENER_TIMEOUT)
+                        ack_packet = self.ctx.get_packet(
+                            timeout=ACK_LISTENER_TIMEOUT)
                         packet_type, ack_num, _ = decode(ack_packet)
-                        if packet_type == TYPE_ACK and ack_num == wrapped_seq_num:
+                        if (packet_type == TYPE_ACK
+                                and ack_num == wrapped_seq_num):
                             logger.debug(RECV_ACK_DATA.format(seq_num=ack_num))
                             packet_acknowledged = True
                             break
@@ -131,13 +134,15 @@ class StopAndWait(TransmissionProtocol):
                 pass
 
             receiver.check_fin_timeout()
-        # salir del while = timeout -> Salir del while solo puede ser por check_fin_timeout
+        # salir del while = timeout -> Salir del while solo
+        # puede ser por check_fin_timeout
         if receiver.expected_seq_num == 0:
             logger.error(NO_DATA_RECEIVED.format(timeout=receiver.fin_timeout))
         else:
             logger.error(
                 TRANSFER_INCOMPLETE.format(
-                    timeout=receiver.fin_timeout, received=receiver.expected_seq_num
+                    timeout=receiver.fin_timeout,
+                    received=receiver.expected_seq_num
                 )
             )
         return False
