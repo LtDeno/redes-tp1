@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import time
+import time, subprocess
 from mininet.net import Mininet
-from mininet.node import OVSController, OVSKernelSwitch, Controller
+from mininet.node import OVSController
 from mininet.link import TCLink
 from mininet.cli import CLI
 from mininet.log import setLogLevel, info
@@ -43,11 +43,11 @@ def run_concurrency_test():
   switch = net.addSwitch("s1")
 
   info("--- Conectando enlaces con pérdida de 10% y RTTs de 40ms ---\n")
-  net.addLink(h_server, switch, loss=10, delay="20ms")
-  net.addLink(h_client1, switch, loss=10, delay="20ms")
-  net.addLink(h_client2, switch, loss=10, delay="20ms")
-  net.addLink(h_client3, switch, loss=10, delay="20ms")
-  net.addLink(h_client4, switch, loss=10, delay="20ms")
+  net.addLink(h_server, switch, bw=13.6, loss=10, delay="150ms", cls=TCLink)
+  net.addLink(h_client1, switch, loss=0, delay="0ms")
+  net.addLink(h_client2, switch, loss=0, delay="0ms")
+  net.addLink(h_client3, switch, loss=0, delay="0ms")
+  net.addLink(h_client4, switch, loss=0, delay="0ms")
 
   info("--- Iniciando red ---\n")
   net.start()
@@ -95,6 +95,18 @@ def run_concurrency_test():
   info("--- Deteniendo la red ---\n")
   net.stop()
 
+  assert(subprocess.run(
+    ["diff", test_files_path + up1_name, storage_path + up1_name],
+    capture_output=True).stdout == b"")
+  assert(subprocess.run(
+    ["diff", test_files_path + up2_name, storage_path + up2_name],
+    capture_output=True).stdout == b"")
+  assert(subprocess.run(
+    ["diff", test_files_path + down1_name, storage_path + down1_name],
+    capture_output=True).stdout == b"")
+  assert(subprocess.run(
+    ["diff", test_files_path + down2_name, storage_path + down2_name],
+    capture_output=True).stdout == b"")
 
 if __name__ == "__main__":
   setLogLevel("info")
