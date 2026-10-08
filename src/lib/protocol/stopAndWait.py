@@ -1,10 +1,13 @@
+from __future__ import annotations
 import logging
 import time
 
 from lib.common.constants import (
-    ACK_LISTENER_TIMEOUT,
+    SW_ACK_LISTENER_TIMEOUT,
     DATA_LISTENER_TIMEOUT,
     SW_TIMEOUT,
+    SW_STALL_TIMEOUT,
+    IDLE_TIMEOUT,
     TYPE_ACK,
     TYPE_DATA,
     TYPE_FIN,
@@ -17,6 +20,7 @@ from lib.protocol.logMessages import (
     RECV_DATA,
     SEND_ACK_DATA,
     SEND_DATA_PACKET,
+    ERROR_SEND_STALL,
     TRANSFER_INCOMPLETE,
 )
 from lib.protocol.transmissionProtocol import TransmissionProtocol
@@ -71,15 +75,25 @@ class StopAndWait(TransmissionProtocol):
                             chunks[sender.abs_seq_num])
 
             packet_acknowledged = False
+            stall_deadline = time.monotonic() + SW_STALL_TIMEOUT
             while not packet_acknowledged:
+
+                """Para chequear si debemos seguir enviando"""
+                if(time.monotonic() > stall_deadline):
+                    logger.error(ERROR_SEND_STALL.format(
+                        timeout=self.stall_timeout,
+                        confirmed=sender.send_base,
+                        total=total_chunks))
+                    return False
+                "-------------------------------------------"
+
                 self.ctx.send_packet(packet)
                 logger.debug(SEND_DATA_PACKET.format(seq_num=wrapped_seq_num))
+                
                 start_time = time.monotonic()
-
                 while time.monotonic() - start_time < self.timeout:
                     try:
-                        ack_packet = self.ctx.get_packet(
-                            timeout=ACK_LISTENER_TIMEOUT)
+                        ack_packet = self.ctx.get_packet(timeout=SW_ACK_LISTENER_TIMEOUT)
                         packet_type, ack_num, _ = decode(ack_packet)
                         if (packet_type == TYPE_ACK
                                 and ack_num == wrapped_seq_num):
@@ -98,7 +112,7 @@ class StopAndWait(TransmissionProtocol):
         return self._send_fin()
 
     def receive_data(self, chunks):
-        receiver = Receiver(self.timeout * 3)
+        receiver = Receiver(IDLE_TIMEOUT) #Receiver(self.timeout * 3)
         while receiver.receive:
             try:
                 packet = self.ctx.get_packet(timeout=DATA_LISTENER_TIMEOUT)
@@ -106,9 +120,6 @@ class StopAndWait(TransmissionProtocol):
                 packet_type, seq_num, payload = decode(packet)
 
                 if packet_type == TYPE_FIN:
-                    # logger.debug(RECV_FIN)
-                    # fin_ack_packet = encode(TYPE_FIN_ACK)
-                    # self.ctx.send_packet(fin_ack_packet)
                     self._recv_fin()
                     receiver.receive = False
                     return True
