@@ -96,7 +96,8 @@ class UploadHandler:
         try:
             protocol = PROTOCOLS[self.protocol](self.client)
             if not protocol.send_data(data):
-                logger.warning(FIN_NOT_CONFIRMED.format(max_retries=MAX_RETRIES, chunks=len(data))) 
+                logger.warning(FIN_NOT_CONFIRMED.format(
+                    max_retries=MAX_RETRIES, chunks=len(data)))
             logger.info(SUCCESSFUL_UPLOAD.format(filename=self.filename))
         except Exception as e:
             logger.error(ERROR_TRANSFER.format(error=e))

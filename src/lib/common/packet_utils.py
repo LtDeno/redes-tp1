@@ -1,4 +1,5 @@
-from lib.common.constants import HEADER_SIZE, SEQ_NUMB_SIZE, TYPE_PACKET_SIZE, NO_SEQ
+from lib.common.constants import (HEADER_SIZE, SEQ_NUMB_SIZE,
+                                  TYPE_PACKET_SIZE, NO_SEQ)
 
 
 def encode(pack_type, seq_num=NO_SEQ, payload=b""):
@@ -13,6 +14,7 @@ def decode(packet):
         return None, None, None
 
     pack_type = int.from_bytes(packet[0:TYPE_PACKET_SIZE], "big")
-    seq_num = int.from_bytes(packet[TYPE_PACKET_SIZE:HEADER_SIZE], "big", signed=True)
+    seq_num = int.from_bytes(packet[TYPE_PACKET_SIZE:HEADER_SIZE],
+                             "big", signed=True)
     payload = packet[HEADER_SIZE:]
     return pack_type, seq_num, payload
