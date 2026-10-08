@@ -22,9 +22,10 @@ logger = logging.getLogger(__name__)
 
 
 class TransmissionProtocol(ABC):
-    def __init__(self, context, timeout):
+    def __init__(self, context, timeout, stall_timeout):
         self.ctx = context  # referencia a ClientHandler o Client
         self.timeout = timeout
+        self.stall_timeout = stall_timeout
 
     def _recv_fin(self):
         logger.debug(RECV_FIN)

@@ -10,7 +10,7 @@ ERROR_CLIENTHANDLER = "[{addr}] - ERROR: {err}"
 ERROR_FORMAT_REQUEST = "[{addr}] - Error formato de peticion invalido"
 ERROR_UNKNOWN_ACTION = "[{addr}] Acción desconocida: {action}"
 EXECUTE_ACTION = (
-    "[{addr}] - Iniciando accion de {action} del archivo {filename}"
+    "[{addr}] - Iniciando accion de {action} del archivo {filename} "
     "con {protocol}"
 )
 

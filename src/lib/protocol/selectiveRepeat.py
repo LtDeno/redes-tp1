@@ -11,8 +11,7 @@ from lib.common.constants import (
     TYPE_DATA,
     TYPE_ACK,
     TYPE_FIN,
-    DATA_LISTENER_TIMEOUT,
-   
+    DATA_LISTENER_TIMEOUT
 )
 from lib.protocol.logMessages import (
     DISCARD_DUP,
@@ -63,8 +62,6 @@ class Receiver:
         self.last_received_time = time.monotonic()
 
     def check_fin_timeout(self):
-        # and len(self.buffer) == 0
-        # and self.recv_base > 0
         if (
             time.monotonic() - self.last_received_time > self.fin_timeout
         ):
@@ -73,7 +70,7 @@ class Receiver:
 
 class SelectiveRepeat(TransmissionProtocol):
     def __init__(self, context):
-        super().__init__(context, SR_TIMEOUT)
+        super().__init__(context, SR_TIMEOUT, SR_STALL_TIMEOUT)
         self.window = WINDOW_SIZE
         self.max_seq_num = 2 * WINDOW_SIZE + 1
         self.stall_timeout = SR_STALL_TIMEOUT
@@ -115,7 +112,8 @@ class SelectiveRepeat(TransmissionProtocol):
                 sender.next_seq_num += 1
 
             try:
-                ack_packet = self.ctx.get_packet(timeout=SR_ACK_LISTENER_TIMEOUT)
+                ack_packet = self.ctx.get_packet(
+                    timeout=SR_ACK_LISTENER_TIMEOUT)
                 packet_type, ack_num, _ = decode(ack_packet)
                 if packet_type == TYPE_ACK:
                     acked = None
@@ -152,7 +150,7 @@ class SelectiveRepeat(TransmissionProtocol):
         return self._send_fin()
 
     def receive_data(self, chunks):
-        receiver = Receiver(IDLE_TIMEOUT)#Receiver(self.timeout * 3)
+        receiver = Receiver(IDLE_TIMEOUT)
 
         while receiver.receive:
             try:
@@ -180,26 +178,30 @@ class SelectiveRepeat(TransmissionProtocol):
                         logger.debug(DISCARD_DUP.format(seq_num=seq_num,
                                                         expected=window_idx))
 
-                    elif receiver.recv_base + self.window > abs_seq_num: #receiver.recv_base < abs_seq_num + self.window:
-                        receiver.buffer[abs_seq_num] = (b"" if payload is None else payload)
+                    elif receiver.recv_base + self.window > abs_seq_num:
+                        receiver.buffer[abs_seq_num] = (b"" if payload is
+                                                        None else payload)
                         delivered = 0
                         while receiver.recv_base in receiver.buffer:
                             chunks.append(
                                 receiver.buffer.pop(receiver.recv_base))
                             receiver.recv_base += 1
-                            #logger.debug(RECV_DATA.format(seq_num=receiver.recv_base - 1))
                             delivered += 1
-                        
+
                         if delivered:
-                            logger.debug(WINDOW_SLIDE.format(delivered=delivered, base=receiver.recv_base, seq=(receiver.recv_base-1) % self.max_seq_num))
+                            logger.debug(WINDOW_SLIDE.format(
+                                delivered=delivered,
+                                base=receiver.recv_base,
+                                seq=(receiver.recv_base-1) % self.max_seq_num)
+                            )
 
                     else:
                         logger.debug(
-                            DISCARD_DUP.format(seq_num=seq_num, expected=window_idx))
+                            DISCARD_DUP.format(seq_num=seq_num,
+                                               expected=window_idx))
 
             except TimeoutError:
                 pass
-            
 
             receiver.check_fin_timeout()
         if receiver.recv_base == 0:

@@ -1,4 +1,3 @@
-
 """Logins de fileHandler"""
 ERROR_EMPTY_LIST = (
     "No se pudo guardar el archivo {filename}, la lista de bytes esta vacia"
